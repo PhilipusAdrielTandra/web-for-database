@@ -1,32 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-
+import React from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ChatbotData from './components/ChatbotData';
 function App() {
-  const [posts, setPosts] = useState([]);
-
-  useEffect(() => {
-    fetch('http://127.0.0.1:8000/responses')
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        setPosts(data);
-      })
-      .catch(err => {
-        console.log(err.message);
-      });
-  }, []);
-
   return (
-    <div>
-      <h1>Response Data:</h1>
-      {posts.map(post => (
-        <div className="post-card" key={post.id}>
-          <h2 className="post-title">Tag ID: {post.tag_id}</h2>
-          <p className="post-body">{post.response}</p>
-        </div>
-      ))}
-    </div>
-  );
+    <Router>
+      <div>
+        <Routes>
+          <Route path="/" element={<ChatbotData/>}/>
+          {/* <Route path="/create" element={<CreateTransactions/>}/>
+          <Route path="/edit/:id" element={<EditTransaction/>}/> */}
+        </Routes>
+      </div>
+    </Router>
+  )
 }
 
-export default App;
+export default App
