@@ -29,9 +29,11 @@ class PatternResponse(BaseModel):
     responses: list[str]
 
 class PatternModel(BaseModel):
+    tag: str
     pattern: str
 
 class ResponseModel(BaseModel):
+    tag: str
     response: str
     
 class TagCreate(BaseModel):
@@ -161,13 +163,16 @@ async def get_all_responses():
 @app.post("/responses/")
 async def create_response(response: ResponseModel):
     try:
-        # Insert the response into MongoDB
-        result = collection.insert_one({"response": response.response})
+        # Validate that the tag is not empty
+        if not response.tag.strip():
+            raise HTTPException(status_code=400, detail="Tag cannot be empty")
+        # Insert the response into MongoDB with the specified tag
+        result = collection.insert_one({"tag": response.tag, "response": response.response})
         # Return the inserted response
-        return JSONResponse(content={"message": "Response created successfully", "id": str(result.inserted_id)}, status_code=201)
+        return {"message": "Response added successfully", "id": str(result.inserted_id)}
     except Exception as e:
-        return JSONResponse(content={"message": "Internal server error"}, status_code=500)
-
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
 @app.put("/responses/{response_id}")
 async def update_response(response_id: str, response: ResponseModel):
     try:
