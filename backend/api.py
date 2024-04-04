@@ -4,8 +4,18 @@ from pymongo import MongoClient
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 import urllib.parse
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
+
 
 uri = "mongodb+srv://Visitor:researchgogogo@reseearch.a2rwr6l.mongodb.net/"
 
@@ -186,4 +196,4 @@ async def delete_response(response_id: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="localhost", port=9000)
+    uvicorn.run(app, host="localhost", port=8000)

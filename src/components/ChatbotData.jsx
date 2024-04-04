@@ -1,69 +1,64 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 
-function ChatbotData() {
-  const [responses, setResponses] = useState([]);
-  const [patterns, setPatterns] = useState([]);
-
+const ContentList = () => {
+  const [contents, setContents] = useState([]);
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/responses')
-      .then(response => {
-        console.log(response.data);
-        setResponses(response.data);
-      })
-      .catch(err => {
-        console.log(err.message);
-      });
+    const fetchContents = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/contents');
+        const data = await response.json();
+        setContents(data);
+      } catch (error) {
+        console.error('Error fetching contents:', error);
+      }
+    };
 
-    axios.get('http://127.0.0.1:8000/data')
-      .then(response => {
-        console.log(response.data);
-        setPatterns(response.data);
-      })
-      .catch(err => {
-        console.log(err.message);
-      });
+    fetchContents();
   }, []);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Response Data:</h1>
-      <table className="table-auto border-collapse w-full">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">Tag ID</th>
-            <th className="border px-4 py-2">Response</th>
-          </tr>
-        </thead>
-        <tbody>
-          {responses.map(response => (
-            <tr key={response.id}>
-              <td className="border px-4 py-2">{response.tag_id}</td>
-              <td className="border px-4 py-2">{response.response}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <h1 className="text-2xl font-bold mt-8 mb-4">Patterns Data:</h1>
-      <table className="table-auto border-collapse w-full">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">Tag ID</th>
-            <th className="border px-4 py-2">Pattern</th>
-          </tr>
-        </thead>
-        <tbody>
-          {patterns.map(pattern => (
-            <tr key={pattern.id}>
-              <td className="border px-4 py-2">{pattern.tag_id}</td>
-              <td className="border px-4 py-2">{pattern.pattern}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-4">Contents</h1>
+      <ul>
+        {contents.map((content, index) => (
+          <li key={index} className="mb-2">
+            <div className="bg-gray-100 p-4 rounded-lg">
+              <h2 className="text-lg font-bold mb-2">{content.tag}</h2>
+              <div>
+                <h3 className="text-md font-semibold mb-1">Patterns:</h3>
+                <ul>
+                  {content.patterns.map((pattern, i) => (
+                    <li key={i} className="mb-1">
+                      {pattern}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-md font-semibold mb-1">Responses:</h3>
+                <ul>
+                  {content.responses.map((response, i) => (
+                    <li key={i} className="mb-1">
+                      {response}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
-}
+};
 
-export default ChatbotData;
+const App = () => {
+  return (
+    <div>
+      <ContentList />
+    </div>
+  );
+};
+
+export default App;

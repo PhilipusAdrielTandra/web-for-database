@@ -7,9 +7,9 @@ function App() {
     <Router>
       <div>
         <Routes>
-          <Route path="/" element={<Chatbot/>}/>
-          {/* <Route path="/create" element={<CreateTransactions/>}/>
-          <Route path="/edit/:id" element={<EditTransaction/>}/> */}
+          <Route path="/" element={<ChatbotData/>}/>
+          <Route path="/chatbot" element={<Chatbot/>}/>
+
         </Routes>
       </div>
     </Router>
