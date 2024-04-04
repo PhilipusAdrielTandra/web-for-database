@@ -24,7 +24,13 @@ const ContentList = () => {
         {contents.map((content, index) => (
           <li key={index} className="mb-2">
             <div className="bg-gray-100 p-4 rounded-lg">
-              <h2 className="text-lg font-bold mb-2">{content.tag}</h2>
+            <div className='flex justify-between'>
+                <h2 className="text-left text-lg font-bold mb-2">{content.tag}</h2>
+                <div>
+                  <a className='mr-2'>Edit</a>
+                  <a className='mr-2'>Delete</a>
+                </div>
+            </div>
               <div>
                 <h3 className="text-md font-semibold mb-1">Patterns:</h3>
                 <ul>
