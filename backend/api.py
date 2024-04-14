@@ -33,7 +33,6 @@ class PatternModel(BaseModel):
     pattern: str
 
 class ResponseModel(BaseModel):
-    tag: str
     response: str
     
 class TagCreate(BaseModel):
@@ -162,16 +161,22 @@ async def get_all_responses():
     except Exception as e:
         return JSONResponse(content={"message": "Internal server error"}, status_code=500)
     
-@app.post("/responses/")
-async def create_response(response: ResponseModel):
+@app.post("/responses/{tag}")
+async def create_response(tag: str, response: ResponseModel):
     try:
-        # Validate that the tag is not empty
-        if not response.tag.strip():
-            raise HTTPException(status_code=400, detail="Tag cannot be empty")
-        # Insert the response into MongoDB with the specified tag
-        result = collection.insert_one({"tag": response.tag, "response": response.response})
-        # Return the inserted response
-        return {"message": "Response added successfully", "id": str(result.inserted_id)}
+        # Check if the tag exists in the database
+        existing_tag = collection.find_one({"tag": tag})
+        if existing_tag is None:
+            raise HTTPException(status_code=404, detail="Tag not found")
+        
+        # Update the existing tag document to add the response
+        result = collection.update_one({"tag": tag}, {"$push": {"responses": response.response}})
+        if result.modified_count == 0:
+            raise HTTPException(status_code=500, detail="Failed to update tag")
+        
+        return {"message": "Response added to existing tag successfully"}
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
     

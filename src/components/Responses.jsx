@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const ContentList = () => {
   const [contents, setContents] = useState([]);
+  const [existingTag, setExistingTag] = useState('');
   const [newResponse, setNewResponse] = useState('');
   const [updateResponseId, setUpdateResponseId] = useState('');
   const [updateResponseValue, setUpdateResponseValue] = useState('');
@@ -24,19 +25,26 @@ const ContentList = () => {
     fetchContents();
   }, []);
 
+  const [tag, setTag] = useState('');
+  const [response, setResponse] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
   const addResponse = async () => {
     try {
-      const response = await fetch('http://localhost:8000/responses', {
+      const responseFromServer = await fetch(`http://localhost:8000/responses/${tag}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ response: newResponse })
+        body: JSON.stringify({ response: response })
       });
-      const data = await response.json();
-      setAddMessage(data.message);
+      const data = await responseFromServer.json();
+      setSuccessMessage(data.message);
+      setErrorMessage('');
     } catch (error) {
-      console.error('Error adding response:', error);
+      setErrorMessage('Error adding response: ' + error.message);
+      setSuccessMessage('');
     }
   };
 
@@ -70,14 +78,18 @@ const ContentList = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">Responses</h1>
+      <h1 className='text-2xl font-bold mb-4'> Responses </h1>
       <div>
-        <h2 className="text-md font-semibold mb-1">Add New Response</h2>
-        <input type="text" value={newResponse} onChange={(e) => setNewResponse(e.target.value)} placeholder="Enter response" className="mr-2" />
+      <h2 className="text-md font-semibold mb-1"> Add Response to Existing Tag </h2>
+        <label htmlFor="tag">Tag:</label>
+        <input type="text" id="tag" value={tag} onChange={(e) => setTag(e.target.value)} placeholder="Enter existing tag" className="mr-2"/>
+        <label htmlFor="response">Response:</label>
+        <input type="text" id="response" value={response} onChange={(e) => setResponse(e.target.value)} placeholder="Enter response" className="mr-2"/>
         <button onClick={addResponse} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           Add Response
         </button>
-        <div className="message" id="addMessage">{addMessage}</div>
+        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       </div>
 
       <div>
