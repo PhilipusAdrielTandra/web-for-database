@@ -99,6 +99,21 @@ async def get_all_tags():
     except Exception as e:
         return JSONResponse(content={"message": "Internal server error"}, status_code=500)
 
+@app.get("/tags/{tag_id}")
+async def get_tag_by_id(tag_id: str):
+    try:
+        tag_object_id = ObjectId(tag_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid ObjectId")
+
+    tag = collection.find_one({"_id": tag_object_id})
+    if tag:
+        tag["_id"] = str(tag["_id"]) 
+        return tag
+    else:
+        raise HTTPException(status_code=404, detail=f"Tag with id '{tag_id}' not found")
+
+
 @app.post("/tags/")
 async def create_tag(tag_data: TagCreate):
     tag = tag_data.tag
@@ -180,27 +195,18 @@ async def create_response(tag: str, response: ResponseModel):
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
     
-@app.put("/responses/{tag}/{response_index}")
-async def update_response(tag: str, response_index: int, response: ResponseModel):
+@app.put("/responses/{response_id}")
+async def update_response(response_id: str, response: ResponseModel):
     try:
-        # Check if the tag exists in the database
-        existing_tag = collection.find_one({"tag": tag})
-        if existing_tag is None:
-            raise HTTPException(status_code=404, detail=f"Tag '{tag}' not found")
-        
-        # Update the response within the existing tag
-        result = collection.update_one({"tag": tag}, 
-                                       {"$set": {f"responses.{response_index}": response.response}})
+        # Update the response in MongoDB
+        result = collection.update_one({"_id": ObjectId(response_id)}, {"$set": {"response": response.response}})
         if result.modified_count == 0:
-            raise HTTPException(status_code=404, detail="Response not found within the tag")
-        
+            raise HTTPException(status_code=404, detail="Response not found")
         # Return success message
-        return {"message": "Response updated successfully within the tag"}
-    except HTTPException as e:
-        raise e
+        return JSONResponse(content={"message": "Response updated successfully"})
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal server error")
-    
+        return JSONResponse(content={"message": "Internal server error"}, status_code=500)
+
 @app.delete("/responses/{response_id}")
 async def delete_response(response_id: str):
     try:

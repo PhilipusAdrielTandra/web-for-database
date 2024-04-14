@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const ContentList = () => {
   const [contents, setContents] = useState([]);
@@ -43,7 +44,7 @@ const ContentList = () => {
             <div className='flex justify-between'>
                 <h2 className="text-left text-lg font-bold mb-2">{content.tag}</h2>
                 <div>
-                  <a className='mr-2  hover:cursor-pointer'>Edit</a>
+                  <Link to={`/edit/${content._id}`} className='mr-2'>Edit</Link>
                   <a className='mr-2 hover:cursor-pointer' onClick={() => deleteTag(content._id)}>Delete</a>
                 </div>
             </div>
