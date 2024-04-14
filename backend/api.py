@@ -43,7 +43,9 @@ class TagCreate(BaseModel):
 @app.get("/contents")
 async def get_contents():
     try:
-        contents = list(collection.find({}, {"_id": 0}))
+        contents = list(collection.find({}))
+        for content in contents:
+            content["_id"] = str(content["_id"])
         return contents
     except Exception as e:
         return JSONResponse(content={"message": "Internal server error"}, status_code=500)

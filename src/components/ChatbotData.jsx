@@ -17,6 +17,22 @@ const ContentList = () => {
     fetchContents();
   }, []);
 
+  const deleteTag = async (tagId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/tags/${tagId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        // Remove the deleted tag from the UI
+        setContents(contents.filter((content) => content._id !== tagId));
+      } else {
+        console.error('Failed to delete tag');
+      }
+    } catch (error) {
+      console.error('Error deleting tag:', error);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">Contents</h1>
@@ -27,8 +43,8 @@ const ContentList = () => {
             <div className='flex justify-between'>
                 <h2 className="text-left text-lg font-bold mb-2">{content.tag}</h2>
                 <div>
-                  <a className='mr-2'>Edit</a>
-                  <a className='mr-2'>Delete</a>
+                  <a className='mr-2  hover:cursor-pointer'>Edit</a>
+                  <a className='mr-2 hover:cursor-pointer' onClick={() => deleteTag(content._id)}>Delete</a>
                 </div>
             </div>
               <div>
