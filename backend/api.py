@@ -195,29 +195,46 @@ async def create_response(tag: str, response: ResponseModel):
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
     
-@app.put("/responses/{response_id}")
-async def update_response(response_id: str, response: ResponseModel):
+@app.put("/responses/{tag}/{response_index}")
+async def update_response(tag: str, response_index: int, response: ResponseModel):
     try:
-        # Update the response in MongoDB
-        result = collection.update_one({"_id": ObjectId(response_id)}, {"$set": {"response": response.response}})
+        # Check if the tag exists in the database
+        existing_tag = collection.find_one({"tag": tag})
+        if existing_tag is None:
+            raise HTTPException(status_code=404, detail=f"Tag '{tag}' not found")
+        
+        # Update the response within the existing tag
+        result = collection.update_one({"tag": tag}, 
+                                       {"$set": {f"responses.{response_index}": response.response}})
         if result.modified_count == 0:
-            raise HTTPException(status_code=404, detail="Response not found")
+            raise HTTPException(status_code=404, detail="Response not found within the tag")
+        
         # Return success message
-        return JSONResponse(content={"message": "Response updated successfully"})
+        return {"message": "Response updated successfully within the tag"}
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        return JSONResponse(content={"message": "Internal server error"}, status_code=500)
-
-@app.delete("/responses/{response_id}")
-async def delete_response(response_id: str):
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+@app.delete("/responses/{tag}/{response_index}")
+async def delete_response(tag: str, response_index: int):
     try:
-        # Delete the response from MongoDB
-        result = collection.delete_one({"_id": ObjectId(response_id)})
-        if result.deleted_count == 0:
-            raise HTTPException(status_code=404, detail="Response not found")
+        # Check if the tag exists in the database
+        existing_tag = collection.find_one({"tag": tag})
+        if existing_tag is None:
+            raise HTTPException(status_code=404, detail=f"Tag '{tag}' not found")
+        
+        # Delete the response from the existing tag
+        result = collection.update_one({"tag": tag}, {"$pull": {"responses": {"$exists": True, "$eq": existing_tag['responses'][response_index]}}})
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Response not found within the tag")
+        
         # Return success message
         return JSONResponse(content={"message": "Response deleted successfully"})
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        return JSONResponse(content={"message": "Internal server error"}, status_code=500)
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 

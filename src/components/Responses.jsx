@@ -13,12 +13,6 @@ const ContentList = ({ onUpdate }) => {
   const [updateMessage, setUpdateMessage] = useState('');
   const [deleteMessage, setDeleteMessage] = useState('');
 
-  // ContentList.propTypes = {
-  //   tag: PropTypes.string.isRequired,
-  //   responseId: PropTypes.string.isRequired,
-  //   onUpdate: PropTypes.func.isRequired,
-  // };
-
   useEffect(() => {
     const fetchContents = async () => {
       try {
@@ -78,13 +72,16 @@ const ContentList = ({ onUpdate }) => {
 
   const deleteResponse = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/responses/${deleteResponseId}`, {
-        method: 'DELETE'
+      const response = await fetch(`http://localhost:8000/responses/${tag}/${responseId}`, {
+        method: 'DELETE',
       });
       const data = await response.json();
-      setDeleteMessage(data.message);
+      setSuccessMessage(data.message);
+      setErrorMessage('');
+      // onDelete(); // Call the onDelete function to trigger any necessary actions after successful delete
     } catch (error) {
-      console.error('Error deleting response:', error);
+      setErrorMessage('Error deleting response: ' + error.message);
+      setSuccessMessage('');
     }
   };
 
@@ -121,13 +118,16 @@ const ContentList = ({ onUpdate }) => {
 
       <div>
         <h2 className="text-md font-semibold mb-1">Delete Response</h2>
-        <input type="text" value={deleteResponseId} onChange={(e) => setDeleteResponseId(e.target.value)} placeholder="Enter response ID" className="mr-2" />
+        <label htmlFor="tag">Tag:</label>
+        <input type="text" id="tag" value={tag} onChange={(e) => setTag(e.target.value)} placeholder="Enter tag" className='mr-2'/>
+        <label htmlFor="responseIndex">Response Index:</label>
+        <input type="text" id="responseId" value={responseId} onChange={(e) => setResponseId(e.target.value)} placeholder="Enter response id" className='mr-2'/>
         <button onClick={deleteResponse} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           Delete Response
         </button>
-        <div className="message" id="deleteMessage">{deleteMessage}</div>
-      </div>
-
+        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+        </div>
     </div>
   );
 };
