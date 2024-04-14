@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from 'react';
+// import PropTypes from 'prop-types';
 
-const ContentList = () => {
+const ContentList = ({ onUpdate }) => {
   const [contents, setContents] = useState([]);
   const [existingTag, setExistingTag] = useState('');
   const [newResponse, setNewResponse] = useState('');
+  const [responseId, setResponseId] = useState('');
   const [updateResponseId, setUpdateResponseId] = useState('');
   const [updateResponseValue, setUpdateResponseValue] = useState('');
   const [deleteResponseId, setDeleteResponseId] = useState('');
   const [addMessage, setAddMessage] = useState('');
   const [updateMessage, setUpdateMessage] = useState('');
   const [deleteMessage, setDeleteMessage] = useState('');
+
+  // ContentList.propTypes = {
+  //   tag: PropTypes.string.isRequired,
+  //   responseId: PropTypes.string.isRequired,
+  //   onUpdate: PropTypes.func.isRequired,
+  // };
 
   useEffect(() => {
     const fetchContents = async () => {
@@ -24,6 +32,7 @@ const ContentList = () => {
 
     fetchContents();
   }, []);
+
 
   const [tag, setTag] = useState('');
   const [response, setResponse] = useState('');
@@ -50,17 +59,20 @@ const ContentList = () => {
 
   const updateResponse = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/responses/${updateResponseId}`, {
+      const response = await fetch(`http://localhost:8000/responses/${tag}/${responseId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ response: updateResponseValue })
+        body: JSON.stringify({ response: newResponse })
       });
       const data = await response.json();
-      setUpdateMessage(data.message);
+      setSuccessMessage(data.message);
+      setErrorMessage('');
+      // onUpdate(); // Call the onUpdate function to trigger any necessary actions after successful update
     } catch (error) {
-      console.error('Error updating response:', error);
+      setErrorMessage('Error updating response: ' + error.message);
+      setSuccessMessage('');
     }
   };
 
@@ -94,12 +106,17 @@ const ContentList = () => {
 
       <div>
         <h2 className="text-md font-semibold mb-1">Update Response</h2>
-        <input type="text" value={updateResponseId} onChange={(e) => setUpdateResponseId(e.target.value)} placeholder="Enter response ID" className="mr-2" />
-        <input type="text" value={updateResponseValue} onChange={(e) => setUpdateResponseValue(e.target.value)} placeholder="Enter new response" className="mr-2" />
+        <label htmlFor='tag'>Tag:</label>
+        <input type="text" id="tag" value={tag} onChange={(e) => setTag(e.target.value)} placeholder='Enter existing tag' className='mr-2'/>
+        <label htmlFor='responseId'> Response ID: </label>
+        <input type="text" id="responseId" value={responseId} onChange={(e) => setResponseId(e.target.value)} placeholder="Enter response ID" className='mr-2'/>
+        <label htmlFor='newResponse'> New Response: </label>
+        <input type="text" id="newResponse" value={newResponse} onChange={(e) => setNewResponse(e.target.value)} placeholder="Enter new response" className="mr-2" />
         <button onClick={updateResponse} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           Update Response
         </button>
-        <div className="message" id="updateMessage">{updateMessage}</div>
+        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       </div>
 
       <div>
