@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import EditTag from './components/EditTag';
+import EditTag from './components/editTag';
 import ChatbotData from './components/ChatbotData';
 import Chatbot from './components/ChatBot';
 import Responses from './components/Responses'

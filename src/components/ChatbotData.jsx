@@ -24,7 +24,6 @@ const ContentList = () => {
         method: 'DELETE',
       });
       if (response.ok) {
-        // Remove the deleted tag from the UI
         setContents(contents.filter((content) => content._id !== tagId));
       } else {
         console.error('Failed to delete tag');
@@ -36,18 +35,21 @@ const ContentList = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">Contents</h1>
+      <div className='flex justify-between'>
+        <h1 className="text-2xl font-bold mb-4">Contents</h1>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2">Create tag</button>      
+      </div>
       <ul>
         {contents.map((content, index) => (
           <li key={index} className="mb-2">
-            <div className="bg-gray-100 p-4 rounded-lg">
-            <div className='flex justify-between'>
-                <h2 className="text-left text-lg font-bold mb-2">{content.tag}</h2>
-                <div>
-                  <Link to={`/edit/${content._id}`} className='mr-2'>Edit</Link>
-                  <a className='mr-2 hover:cursor-pointer' onClick={() => deleteTag(content._id)}>Delete</a>
-                </div>
-            </div>
+            <div className="bg-gray-100 p-4 rounded-lg w-full">
+              <div className='flex justify-between'>
+                  <h2 className="text-left text-lg font-bold mb-2">{content.tag}</h2>
+                  <div>
+                    <Link to={`/edit/${content._id}`} className='mr-2'>Edit</Link>
+                    <a className='mr-2 hover:cursor-pointer' onClick={() => deleteTag(content._id)}>Delete</a>
+                  </div>
+              </div>
               <div>
                 <h3 className="text-md font-semibold mb-1">Patterns:</h3>
                 <ul>
