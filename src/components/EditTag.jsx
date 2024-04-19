@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
 
-const EditTag = () => {
+const editTag = () => {
   const { id } = useParams(); 
   const [tagName, setTagName] = useState('');
   const [tagPatterns, setTagPatterns] = useState([]);
@@ -75,11 +75,11 @@ const EditTag = () => {
           <input type="text" id="tagName" className="border rounded-md px-3 py-2 w-full" value={tagName} onChange={(e) => setTagName(e.target.value)} />
         </div>
         <div className="mb-4">
-          <label htmlFor="tagPatterns" className="block text-sm font-semibold mb-1">Tag Patterns:</label> {/* Updated label */}
+          <label htmlFor="tagPatterns" className="block text-sm font-semibold mb-1">Tag Patterns:</label> 
           <input type="text" id="tagPatterns" className="border rounded-md px-3 py-2 w-full" value={tagPatterns.join(',')} onChange={(e) => setTagPatterns(e.target.value.split(','))} />
         </div>
         <div className="mb-4">
-          <label htmlFor="tagResponses" className="block text-sm font-semibold mb-1">Tag Responses:</label> {/* Updated label */}
+          <label htmlFor="tagResponses" className="block text-sm font-semibold mb-1">Tag Responses:</label> 
           <input type="text" id="tagResponses" className="border rounded-md px-3 py-2 w-full" value={tagResponses.join(',')} onChange={(e) => setTagResponses(e.target.value.split(','))} />
         </div>
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">Update Tag</button>
@@ -88,4 +88,4 @@ const EditTag = () => {
   );
 };
 
-export default EditTag;
+export default editTag;

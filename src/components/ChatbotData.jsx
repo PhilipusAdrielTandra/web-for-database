@@ -37,7 +37,9 @@ const ContentList = () => {
     <div className="container mx-auto px-4 py-8">
       <div className='flex justify-between'>
         <h1 className="text-2xl font-bold mb-4">Contents</h1>
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2">Create tag</button>      
+        <Link to={'/create'}>
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2">Create tag</button>    
+        </Link>  
       </div>
       <ul>
         {contents.map((content, index) => (
