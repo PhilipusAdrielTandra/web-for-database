@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'
+import axios from 'axios';
 
-const editTag = () => {
+const EditTag = () => {
   const { id } = useParams(); 
   const [tagName, setTagName] = useState('');
   const [tagPatterns, setTagPatterns] = useState([]);
   const [tagResponses, setTagResponses] = useState([]);
+  const [error, setError] = useState('');
 
   const navigate = useNavigate();
 
@@ -22,7 +23,6 @@ const editTag = () => {
         setTagName(tagDetails.tag);
         setTagPatterns(tagDetails.patterns);
         setTagResponses(tagDetails.responses);
-
       } catch (error) {
         console.error('Error fetching tag details:', error);
       }
@@ -42,8 +42,6 @@ const editTag = () => {
         },
       };
   
-      console.log('Request Data:', requestData);
-      
       await axios.put(`http://localhost:8000/tags/${id}`, requestData, {
         headers: {
           'Content-Type': 'application/json',
@@ -51,36 +49,33 @@ const editTag = () => {
       });
       
       alert(`Tag with ID ${id} updated successfully`);
-      navigate('/')
+      navigate('/');
     } catch (error) {
       console.error('Error:', error);
       if (error.response && error.response.status === 422) {
-        console.log('Response Data:', error.response.data);
+        setError('Invalid input data. Please check your inputs and try again.');
       } else {
-        alert('An error occurred while updating the tag');
+        setError('An error occurred while updating the tag. Please try again later.');
       }
     }
   };
-  
-  
-  
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-1">Edit Tag</h1>
-      <p className='opacity-50'>Responses and patterns are separated by ","</p>
+      <h1 className="text-2xl font-bold mb-4">Edit Tag</h1>
+      {error && <div className="text-red-500 mb-4">{error}</div>}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label htmlFor="tagName" className="block text-sm font-semibold mb-1">Tag Name:</label>
-          <input type="text" id="tagName" className="border rounded-md px-3 py-2 w-full" value={tagName} onChange={(e) => setTagName(e.target.value)} />
+          <input type="text" id="tagName" className="border rounded-md px-3 py-2 w-full" value={tagName} onChange={(e) => setTagName(e.target.value)} required />
         </div>
         <div className="mb-4">
-          <label htmlFor="tagPatterns" className="block text-sm font-semibold mb-1">Tag Patterns:</label> 
-          <input type="text" id="tagPatterns" className="border rounded-md px-3 py-2 w-full" value={tagPatterns.join(',')} onChange={(e) => setTagPatterns(e.target.value.split(','))} />
+          <label htmlFor="tagPatterns" className="block text-sm font-semibold mb-1">Tag Patterns (comma-separated):</label> 
+          <textarea id="tagPatterns" className="border rounded-md px-3 py-2 w-full h-24" value={tagPatterns.join(',')} onChange={(e) => setTagPatterns(e.target.value.split(','))} required />
         </div>
         <div className="mb-4">
-          <label htmlFor="tagResponses" className="block text-sm font-semibold mb-1">Tag Responses:</label> 
-          <input type="text" id="tagResponses" className="border rounded-md px-3 py-2 w-full" value={tagResponses.join(',')} onChange={(e) => setTagResponses(e.target.value.split(','))} />
+          <label htmlFor="tagResponses" className="block text-sm font-semibold mb-1">Tag Responses (comma-separated):</label> 
+          <textarea id="tagResponses" className="border rounded-md px-3 py-2 w-full h-24" value={tagResponses.join(',')} onChange={(e) => setTagResponses(e.target.value.split(','))} required />
         </div>
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">Update Tag</button>
       </form>
@@ -88,4 +83,4 @@ const editTag = () => {
   );
 };
 
-export default editTag;
+export default EditTag;
