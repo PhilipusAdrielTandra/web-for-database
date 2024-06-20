@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Modal from './Modal';
 
 const ContentList = () => {
   const [contents, setContents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedContentIndex, setSelectedContentIndex] = useState(null);
+
 
   useEffect(() => {
     const fetchContents = async () => {
@@ -20,20 +24,35 @@ const ContentList = () => {
     fetchContents();
   }, []);
 
-  const deleteTag = async (tagId, index) => {
+  const openModal = (index) => {
+    setSelectedContentIndex(index);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedContentIndex(null); 
+  };
+
+  const deleteTag = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/tags/${tagId}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        const updatedContents = [...contents];
-        updatedContents.splice(index, 1);
-        setContents(updatedContents);
-      } else {
-        console.error('Failed to delete tag');
+      if (selectedContentIndex !== null) {
+        const tagId = contents[selectedContentIndex]._id;
+        const response = await fetch(`http://localhost:8000/tags/${tagId}`, {
+          method: 'DELETE',
+        });
+        if (response.ok) {
+          const updatedContents = [...contents];
+          updatedContents.splice(selectedContentIndex, 1);
+          setContents(updatedContents);
+        } else {
+          console.error('Failed to delete tag');
+        }
       }
     } catch (error) {
       console.error('Error deleting tag:', error);
+    } finally {
+      closeModal(); 
     }
   };
 
@@ -77,15 +96,20 @@ const ContentList = () => {
                 ))}
               </ul>
             </div>
-            <div className="mt-6 ">
+            <div className="mt-6">
               <Link to={`/edit/${content._id}`}>
                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">Details</button>
               </Link>
-              <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => deleteTag(content._id, index)}>Delete</button>
+              <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => openModal(index)}>Delete</button>
             </div>
           </div>
         ))}
       </div>
+      <Modal
+        isOpen={modalOpen}
+        onClose={closeModal}
+        onConfirm={deleteTag}
+      />
     </div>
   );
 };
