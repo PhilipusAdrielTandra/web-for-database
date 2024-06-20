@@ -41,9 +41,14 @@ const ContentList = () => {
     <div className="container mx-auto px-4 py-8" style={{ opacity: loading ? 0 : 1, transition: 'opacity 2s ease' }}>
       <div className='flex justify-between'>
         <h1 className="text-2xl font-bold mb-4">Contents</h1>
-        <Link to={'/create'}>
-          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded m-2">Create tag</button>
-        </Link>
+        <div className="flex">
+          <Link to={'/create'}>
+            <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">Create tag</button>
+          </Link>
+          <Link to={'/unknown'}>
+            <button className="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded">Unrecognized messages</button>
+          </Link>
+        </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {contents.map((content, index) => (
