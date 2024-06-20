@@ -23,6 +23,12 @@ uri = "mongodb+srv://Visitor:researchgogogo@reseearch.a2rwr6l.mongodb.net/"
 client = MongoClient(uri)
 db = client['research']
 collection = db['data']
+unknown_db = db['unknown']
+
+class UnkownModel(BaseModel):
+    tag: str
+    user_id: str
+    data: list[str]
 
 class PatternResponse(BaseModel):
     patterns: list[str]
@@ -38,6 +44,8 @@ class ResponseModel(BaseModel):
 class TagCreate(BaseModel):
     tag: str
     data: PatternResponse
+
+
 
 @app.get("/contents")
 async def get_contents():
@@ -66,6 +74,9 @@ async def create_pattern(pattern: PatternModel):
         return JSONResponse(content={"message": "Pattern created successfully", "id": str(result.inserted_id)}, status_code=201)
     except Exception as e:
         return JSONResponse(content={"message": "Internal server error"}, status_code=500)
+
+
+
 
 @app.put("/patterns/{pattern_id}")
 async def update_pattern(pattern_id: str, pattern: PatternModel):
@@ -236,7 +247,23 @@ async def delete_response(tag: str, response_index: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
 
+@app.post("/unknown/")
+async def create_unknown(data: UnkownModel):
+    try:
+        result = unknown_db.insert_one(data.dict())
+        return JSONResponse(content={"message": "Unknown data created successfully", "id": str(result.inserted_id)}, status_code=201)
+    except Exception as e:
+        return JSONResponse(content={"message": "Internal server error"}, status_code=500)
 
+@app.get("/unknown/")
+async def get_unknown():
+    try:
+        unknown_data = list(unknown_db.find({}))
+        for data in unknown_data:
+            data["_id"] = str(data["_id"])
+        return unknown_data
+    except Exception as e:
+        return JSONResponse(content={"message": "Internal server error"}, status_code=500)
 
 if __name__ == "__main__":
     import uvicorn

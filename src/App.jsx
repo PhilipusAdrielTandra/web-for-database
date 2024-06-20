@@ -6,6 +6,7 @@ import CreateTag from './components/CreateTag';
 import ChatbotData from './components/ChatbotData';
 import Chatbot from './components/ChatBot';
 import Responses from './components/Responses'
+import Unknown from './components/Unknown';
 function App() {
   return (
     <Router>
@@ -16,6 +17,7 @@ function App() {
           <Route path="/responses" element={<Responses/>}/>
           <Route path="/edit/:id" element={<EditTag/>}/>
           <Route path="/create" element={<CreateTag/>}/>
+          <Route path='/unknown' element={<Unknown/>}/>
         </Routes>
       </div>
     </Router>

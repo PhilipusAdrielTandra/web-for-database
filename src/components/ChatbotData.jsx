@@ -42,7 +42,7 @@ const ContentList = () => {
       <div className='flex justify-between'>
         <h1 className="text-2xl font-bold mb-4">Contents</h1>
         <Link to={'/create'}>
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2">Create tag</button>
+          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded m-2">Create tag</button>
         </Link>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
