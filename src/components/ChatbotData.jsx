@@ -7,7 +7,7 @@ const ContentList = () => {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedContentIndex, setSelectedContentIndex] = useState(null);
-
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchContents = async () => {
@@ -56,11 +56,22 @@ const ContentList = () => {
     }
   };
 
+  const filteredContents = contents.filter(content => 
+    content.tag.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="container mx-auto px-4 py-8" style={{ opacity: loading ? 0 : 1, transition: 'opacity 2s ease' }}>
-      <div className='flex justify-between'>
-        <h1 className="text-2xl font-bold mb-4">Contents</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Contents</h1>
         <div className="flex">
+          <input 
+            type="text" 
+            placeholder="Search by tag..." 
+            className="border border-gray-300 rounded py-2 px-4 mr-4" 
+            value={searchTerm} 
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
           <Link to={'/create'}>
             <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">Create tag</button>
           </Link>
@@ -70,7 +81,7 @@ const ContentList = () => {
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {contents.map((content, index) => (
+        {filteredContents.map((content, index) => (
           <div key={index} className="bg-gray-100 p-4 rounded-lg flex flex-col justify-between h-full" style={{ transition: 'opacity 0.3s ease' }}>
             <div className='flex justify-between'>
               <h2 className="text-left text-lg font-bold mb-2 truncate overflow-hidden whitespace-nowrap text-ellipsis w-full">{content.tag}</h2>
